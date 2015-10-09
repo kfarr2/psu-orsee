@@ -1,0 +1,6 @@
+This are upgrade instructions for ORSEE 3.0.0 from previous versions.
+
+ORSEE 3.0.0 is a major new versions, with many changes to the database structure and to the code. For this reason, the procedure to upgrade includes two simple steps:
+- install the new version as described in INSTALL.howto and the ORSEE3 wiki
+- import your previous data as described in the ORSEE3 wiki
+

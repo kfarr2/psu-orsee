@@ -1,0 +1,6 @@
+server_url = "10.0.0.10"
+
+db_host = "localhost"
+db_name = "orsee_test"
+db_user = "root"
+db_password = ""
