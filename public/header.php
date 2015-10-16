@@ -4,6 +4,8 @@ $debug__script_started=microtime();
 include ("../config/settings.php");
 include ("../config/system.php");
 include ("../config/requires.php");
+require_once("../utils/general.php");
+require_once("../utils/connections.php");
 
 $proceed=true;
 
