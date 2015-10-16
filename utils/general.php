@@ -28,9 +28,10 @@ function cas_authenticate($url, $conn, $ticket=NULL){
         header("Location: https://sso.pdx.edu/cas/login?service=".$url);
         exit();
     }
-    // Case 1: Just got back from CAS. Verify and send to menu.
+    // Case 1: Just got back from CAS. Verify.
     $link = "https://sso.pdx.edu/cas/proxyValidate?ticket=".$ticket."&service=".$url;
     $cas_username = get_url($link, NULL);
+    // Error if invalid CAS ticket.
     if(strpos($cas_username, "cas:authenticationFailure") !== false){
         exit("Your CAS ticket was not valid");
     }
@@ -50,7 +51,7 @@ function cas_authenticate($url, $conn, $ticket=NULL){
     $query->execute();
     $row = $query->fetch();
 
-    // this user doesn't exist. Add to the database.
+    // This user doesn't exist. Add to the database.
     if(!$row){
         // Assign some variables.
         $now = date('Ymd');
@@ -92,10 +93,12 @@ function cas_authenticate($url, $conn, $ticket=NULL){
         $result->bindParam(12, $new_id['participant_id'], PDO::PARAM_STR);
         $result->bindParam(13, $new_id['participant_id_crypt'], PDO::PARAM_STR);
         $outcome = $result->execute();
+
         // DB operation failed somehow
         if(!$outcome){
             exit("An error occurred. Please try again later or contact the system administrator if the issue persists.");
         }
+
         // Get the freshly added row from the database and send the confirmation email.
         $query->execute();
         $row = $query->fetch();
