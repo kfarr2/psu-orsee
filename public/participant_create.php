@@ -118,7 +118,6 @@ if ($proceed) {
 	$form=true; $errors__dataform=array();
 	if (isset($_REQUEST['add'])) {
 		$continue=true;
-		
 		if (!isset($_REQUEST['captcha']) || !isset($_SESSION['captcha_string']) || $_REQUEST['captcha']!=$_SESSION['captcha_string']) {
 			if (!isset($_REQUEST['subscriptions']) || !is_array($_REQUEST['subscriptions'])) $_REQUEST['subscriptions']=array();
 			$_REQUEST['subscriptions']=id_array_to_db_string($_REQUEST['subscriptions']);
@@ -167,8 +166,8 @@ if ($proceed) {
 					}
 				}
 			}
-		}		
-		
+		}
+
 		if ($continue) {
 	        $participant=$_REQUEST;
 			unset ($_SESSION['pauthdata']['pw_provided']);
@@ -195,8 +194,8 @@ if ($proceed) {
 				redirect ("public/");
 			} else {
 				message(lang('database_error'));
-			} 
-		}
+			}
+        }
 	}
 }
 
@@ -206,24 +205,33 @@ if ($proceed) {
 			<TABLE class="or_formtable" style="width: auto;"><TR><TD>';
 	show_message();
 	$_REQUEST['subpool_id']=$_SESSION['subpool_id'];
+    if($_REQUEST['subpool_id'] == 2){ // user is a student. redirect to CAS
+        $ticket = $_GET['ticket'];
+        $page = "http" . ($_SERVER['HTTPS'] ? "s": "") . "://".$_SERVER['HTTP_HOST'].'/';
+        $login = cas_authenticate($page . "public/participant_create.php", $conn, $ticket);
+        message(lang('successfully_registered'));
+        header("Location: ".$page."public/");
+        exit();
+    }
+    else {
 
-	$extra=''; $pwfields=''; $captcha='';
-	if ($settings['subject_authentication']!='token') {
-		if (isset($_SESSION['pauthdata']['pw_provided']) && $_SESSION['pauthdata']['pw_provided']) {
-				$pwfields.=participant__password_form_fields(false,true);
-		} else {
-				$pwfields.=participant__password_form_fields(false,false);
-		}
-	}
-	$captcha='<TR><TD>'.lang('captcha_text').'<br><IMG src="captcha.php"><BR>
-			<INPUT type="text" name="captcha" size="8" maxlength="8" value="">
-			</TD></TR>';
-	if ($pwfields || $captcha) $extra='<TABLE width="400px"><TR><TD>&nbsp;</TD></TR>'.
-		$pwfields.$captcha.'</TABLE>';
-	else $extra='';
-	participant__show_form($_REQUEST,lang('submit'),$errors__dataform,false,$extra);
-	echo '</TD></TR></TABLE></center>';
-
+        $extra=''; $pwfields=''; $captcha='';
+        if ($settings['subject_authentication']!='token') {
+            if (isset($_SESSION['pauthdata']['pw_provided']) && $_SESSION['pauthdata']['pw_provided']) {
+                    $pwfields.=participant__password_form_fields(false,true);
+            } else {
+                    $pwfields.=participant__password_form_fields(false,false);
+            }
+        }
+        $captcha='<TR><TD>'.lang('captcha_text').'<br><IMG src="captcha.php"><BR>
+                <INPUT type="text" name="captcha" size="8" maxlength="8" value="">
+                </TD></TR>';
+        if ($pwfields || $captcha) $extra='<TABLE width="400px"><TR><TD>&nbsp;</TD></TR>'.
+            $pwfields.$captcha.'</TABLE>';
+        else $extra='';
+        participant__show_form($_REQUEST,lang('submit'),$errors__dataform,false,$extra);
+        echo '</TD></TR></TABLE></center>';
+    }
 }
 
 include("footer.php");
